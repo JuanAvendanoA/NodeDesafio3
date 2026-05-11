@@ -1,0 +1,94 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.form-container {
+  background-color: #0033a0; /* azul oscuro */
+  padding: 15px;
+  border-radius: 8px;
+  color: white;
+  min-width: 250px;
+}
+
+.form-container label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 3px;
+}
+
+.form-container input,
+.form-container textarea {
+  width: 100%;
+  padding: 5px;
+  border-radius: 4px;
+  border: none;
+}
+
+.form-container button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.posts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.post {
+  background-color: #f2f2f2;
+  border-radius: 8px;
+  padding: 10px;
+  max-width: 250px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.post img {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.post .likes-count {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.post .like-btn {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.post .delete-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+}
