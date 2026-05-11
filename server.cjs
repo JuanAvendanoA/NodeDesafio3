@@ -1,52 +1,77 @@
-const express = require("express");
-const cors = require("cors");
-const { Pool } = require("pg");
+import express from "express";
+import cors from "cors";
+import { Pool } from "pg";
 
 const app = express();
-const port = 3000;
+app.use(cors());
+app.use(express.json());
+app.use(express.static("public"));
 
-// Configuración de la conexión a la base de datos
 const pool = new Pool({
+  user: "johnny",
   host: "localhost",
-  user: "johnny", // acceso con usuario de PostgreSQL
-  password: "postgres", // acceso con usuario de PostgreSQL
-  database: "likeme", // nombre de la base de datos
+  database: "like_me",
+  password: "postgres",
+  port: 5432,
   allowExitOnIdle: true, // Permite que el proceso de Node.js termine incluso si hay conexiones inactivas
 });
 
-// Habilita CORS para el frontend (Permite que el frontend pueda hacer solicitudes al servidor)
-app.use(cors());
-app.use(express.json()); // Para recibir datos JSON en el cuerpo de las solicitudes
-
-// Ruta GET para obtener todos los posts
 app.get("/posts", async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM posts");
-    res.json(rows); // Devuelve los posts en formato JSON
+    const result = await pool.query("SELECT * FROM posts ORDER BY id DESC");
+    res.json(result.rows);
   } catch (error) {
-    console.error("Error al obtener los posts:", error);
-    res.status(500).send("Error al obtener los posts");
+    console.error("Error al obtener posts:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
-// Ruta POST para agregar un nuevo post
 app.post("/posts", async (req, res) => {
-  const { titulo, img, descripcion } = req.body;
-  const likes = 0; // Valor por defecto para los likes
-
+  const { title, image, description } = req.body;
   try {
     const result = await pool.query(
-      "INSERT INTO posts (titulo, img, descripcion, likes) VALUES ($1, $2, $3, $4) RETURNING *",
-      [titulo, img, descripcion, likes],
+      "INSERT INTO posts (title, image, description, likes) VALUES ($1, $2, $3, 0) RETURNING *",
+      [title, image, description],
     );
-    res.json(result.rows[0]); // Devuelve el post recién agregado
+    res.json(result.rows[0]);
   } catch (error) {
-    console.error("Error al agregar el post:", error);
-    res.status(500).send("Error al agregar el post");
+    console.error("Error al agregar post:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
-// Iniciar el servidor en el puerto 3000
-app.listen(port, () => {
-  console.log(`Servidor corriendo en el puerto ${port}`);
+app.put("/posts/:id/like", async (req, res) => {
+  const postId = req.params.id;
+  try {
+    const result = await pool.query(
+      "UPDATE posts SET likes = likes + 1 WHERE id = $1 RETURNING *",
+      [postId],
+    );
+    if (result.rowCount === 0)
+      return res.status(404).json({ error: "Post no encontrado" });
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error al actualizar likes:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 });
+
+app.delete("/posts/:id", async (req, res) => {
+  const postId = req.params.id;
+  try {
+    const result = await pool.query("DELETE FROM posts WHERE id = $1", [
+      postId,
+    ]);
+    if (result.rowCount === 0)
+      return res.status(404).json({ error: "Post no encontrado" });
+    res.json({ message: "Post eliminado correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar post:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+const PORT = 5000;
+app.listen(PORT, () =>
+  console.log(`Server running on http://localhost:${PORT}`),
+);
