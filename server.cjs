@@ -10,10 +10,9 @@ app.use(express.static("public"));
 const pool = new Pool({
   user: "johnny",
   host: "localhost",
-  database: "like_me",
+  database: "likeme",
   password: "postgres",
   port: 5432,
-  allowExitOnIdle: true, // Permite que el proceso de Node.js termine incluso si hay conexiones inactivas
 });
 
 app.get("/posts", async (req, res) => {
